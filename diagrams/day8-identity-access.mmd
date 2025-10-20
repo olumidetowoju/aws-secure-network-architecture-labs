@@ -1,0 +1,11 @@
+graph TD
+A[Corporate IdP (Okta/Azure AD)] --> B[AWS SSO]
+B --> C[Account 1 – Test]
+B --> D[Account 2 – Live]
+C --> E[TestAdmin Role w/ Boundary]
+D --> F[LiveOps Role w/ Boundary]
+G[SCP – Enforce MFA/Public S3 Deny] --> C
+G --> D
+H[User login via SSO + MFA] --> E
+E --> I[Assume Cross Role → Live]
+I --> F

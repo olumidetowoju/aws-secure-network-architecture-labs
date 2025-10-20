@@ -1,0 +1,7 @@
+graph TD
+A[CloudTrail] --> B[S3 Log Bucket]
+A --> C[CloudWatch Logs]
+C --> D[SNS Alerts]
+E[GuardDuty] --> F[Security Hub]
+G[AWS Config] --> F
+F --> H[Compliance Dashboard]

@@ -1,0 +1,8 @@
+graph TD
+A[AWS Cloud] --> B[VPC: 10.0.0.0/16]
+B --> C[Test Subnet 10.0.1.0/24]
+B --> D[Live Subnet 10.0.2.0/24]
+C --> E[Test Instance]
+D --> F[Live Instance]
+B --> G[Internet Gateway]
+G --> B

@@ -1,0 +1,5 @@
+graph TD
+A[Admin Workstation] -->|SSH| B[Bastion Host (Public Subnet)]
+B -->|SSH Tunnel| C[Private App Server (Private Subnet)]
+C --> D[Database (Optional)]
+B --> E[CloudWatch Logs]

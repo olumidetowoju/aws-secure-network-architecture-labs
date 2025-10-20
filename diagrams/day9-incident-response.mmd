@@ -1,0 +1,9 @@
+graph TD
+A[GuardDuty High Severity] --> B[EventBridge Rule]
+B --> C[Lambda Quarantine Function]
+C --> D[EC2 Instance -> Quarantine SG]
+A --> E[Security Hub Finding]
+E --> F[AWS Detective Investigation]
+F --> G[Athena Query CloudTrail/VPC Logs]
+G --> H[S3 Log Archive]
+H --> I[Analyst Report / Remediation]

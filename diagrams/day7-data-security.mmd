@@ -1,0 +1,7 @@
+graph TD
+A[App Server (Private Subnet)] --> B[RDS (MySQL Encrypted)]
+B --> C[KMS CMK (Key Rotation)]
+A --> D[Secrets Manager (GetSecretValue)]
+D --> B
+E[Parameter Store] --> A
+B --> F[CloudWatch Logs]

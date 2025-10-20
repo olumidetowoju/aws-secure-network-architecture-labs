@@ -1,0 +1,7 @@
+graph TD
+A[VPC 10.1.0.0/16] --> B[Private Subnet 10.1.1.0/24]
+A --> C[Public Subnet 10.1.2.0/24]
+B --> D[EC2 App Server (Private)]
+C --> E[ALB / Bastion Host]
+A --> F[NAT Gateway]
+F --> B

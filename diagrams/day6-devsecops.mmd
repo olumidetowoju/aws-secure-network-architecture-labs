@@ -1,0 +1,16 @@
+graph TD
+A[Developer PR] --> B[GitHub Actions]
+B --> C[Static Checks: tfsec/Checkov/OPA]
+C --> D[Terraform Plan (test)]
+D --> E[Apply (test)]
+E --> F[Plan (live)]
+F -->|Manual Approval| G[Apply (live)]
+G --> H[AWS: VPC/EC2/SG/NAT]
+H --> I[CloudTrail/Config/GuardDuty/SecurityHub]
+I --> J[SNS Alerts]
+K[EventBridge] --> L[Lambda Auto-Remediation]
+L --> H
+subgraph State
+M[S3 Terraform State]:::state --> N[DynamoDB Locks]:::state
+end
+classDef state fill:#eef,stroke:#99f,stroke-width:1px;
