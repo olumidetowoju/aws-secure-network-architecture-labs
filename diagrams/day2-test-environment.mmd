@@ -1,5 +1,6 @@
 graph TD
-A[VPC 10.0.0.0/16] --> B[Test Subnet 10.0.1.0/24]
-B --> C[EC2: Test Server (Ubuntu)]
-A --> D[Internet Gateway]
-D --> B
+    A[VPC 10.0.0.0/16] --> B[Test Subnet 10.0.1.0/24]
+    B --> C[EC2: Test Server Ubuntu]
+    A --> D[Internet Gateway]
+    D --> E[Internet]
+    C --> E
