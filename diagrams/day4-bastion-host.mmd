@@ -1,5 +1,7 @@
 graph TD
-A[Admin Workstation] -->|SSH| B[Bastion Host (Public Subnet)]
-B -->|SSH Tunnel| C[Private App Server (Private Subnet)]
-C --> D[Database (Optional)]
-B --> E[CloudWatch Logs]
+    A[SSH] --> B[Bastion Host Public Subnet]
+    B --> C[Private Subnet EC2 Instance]
+    D[Security Group] --> B
+    D --> C
+    E[VPC] --> B
+    E --> C
