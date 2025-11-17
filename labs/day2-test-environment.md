@@ -9,25 +9,23 @@ Build a **secure and isolated Test network** on AWS using VPC, subnets, route ta
 
 ```mermaid
 graph TD
-A[VPC 10.0.0.0/16] --> B[Test Subnet 10.0.1.0/24]
-B --> C[EC2 Instance: Test Server (Ubuntu)]
-A --> D[Internet Gateway]
-D --> B
-Component	CIDR	Purpose
-VPC	10.0.0.0/16	Logical boundary for all resources
-Test Subnet	10.0.1.0/24	Isolated environment for testing
-IGW	—	Enables outbound Internet access
-EC2	Auto-assigned	Test VM for connectivity validation
+    A[VPC 10.0.0.0/16] --> B[Test Subnet 10.0.1.0/24]
+    A --> D[Internet Gateway]
+    B --> C[EC2 Instance<br/>Test Server Ubuntu]
+    D --> E[Internet]
+    C --> E
+```
 
-🔒 2. Create the VPC
-bash
-Copy code
+
+
+## 🔒 2. Create the VPC
+
 aws ec2 create-vpc \
   --cidr-block 10.0.0.0/16 \
   --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=SecureTestVPC}]'
 ✅ Note the VPC ID returned in the output — you’ll reuse it below.
 
-🌐 3. Create a Public Subnet
+## 🌐 3. Create a Public Subnet
 bash
 Copy code
 aws ec2 create-subnet \
@@ -35,9 +33,9 @@ aws ec2 create-subnet \
   --cidr-block 10.0.1.0/24 \
   --availability-zone us-east-1a \
   --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=TestSubnet}]'
-🚪 4. Internet Gateway + Routing
-bash
-Copy code
+
+## 🚪 4. Internet Gateway + Routing
+
 aws ec2 create-internet-gateway
 aws ec2 attach-internet-gateway --vpc-id <vpc-id> --internet-gateway-id <igw-id>
 
@@ -52,9 +50,8 @@ aws ec2 associate-route-table \
   --route-table-id <rtb-id>
 ✅ This gives your Test subnet controlled outbound Internet access.
 
-🧱 5. Create a Security Group (Restrict SSH Access)
-bash
-Copy code
+## 🧱 5. Create a Security Group (Restrict SSH Access)
+
 aws ec2 create-security-group \
   --group-name TestSG \
   --description "SG for test environment" \
@@ -69,9 +66,8 @@ Only your admin IP should have SSH access.
 
 No inbound HTTP or RDP yet — keep it minimal.
 
-💻 6. Launch a Test EC2 Instance
-bash
-Copy code
+## 💻 6. Launch a Test EC2 Instance
+
 aws ec2 run-instances \
   --image-id ami-0c02fb55956c7d316 \
   --count 1 \
@@ -82,31 +78,27 @@ aws ec2 run-instances \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=TestServer}]'
 Once running, fetch the Public IP:
 
-bash
-Copy code
 aws ec2 describe-instances --instance-ids <instance-id> --query "Reservations[*].Instances[*].PublicIpAddress" --output text
-🧪 7. Validate Connectivity
+
+## 🧪 7. Validate Connectivity
 SSH into your instance:
 
-bash
-Copy code
 ssh -i SecureKey.pem ubuntu@<public-ip>
 Update and install NGINX for quick validation:
 
-bash
-Copy code
 sudo apt update && sudo apt install -y nginx
 curl http://localhost
 ✅ Expected result: “Welcome to nginx!” page.
 
-🧰 8. Optional Teardown (Clean Exit)
-bash
-Copy code
+## 🧰 8. Optional Teardown (Clean Exit)
+
 aws ec2 terminate-instances --instance-ids <id>
 aws ec2 delete-security-group --group-id <id>
 aws ec2 delete-subnet --subnet-id <id>
 aws ec2 delete-vpc --vpc-id <id>
-📋 9. Validation Checklist
+
+## 📋 9. Validation Checklist
+
 Control	Implemented	Notes
 ✅ VPC	Yes	10.0.0.0/16
 ✅ Subnet	Yes	10.0.1.0/24
@@ -114,7 +106,8 @@ Control	Implemented	Notes
 ✅ Routing	Yes	Internet via IGW
 ✅ Logging	Pending	Add in Day 5 (Monitoring)
 
-🧾 Day 2 Summary
+## 🧾 Day 2 Summary
+
 ✔ Created a secure Test Environment VPC
 ✔ Deployed EC2 instance with least privilege access
 ✔ Validated Internet and SSH connectivity
