@@ -9,25 +9,30 @@ Deploy a **secure, automated, and auditable Production (Live) environment** that
 
 ```mermaid
 graph TD
-A[VPC 10.1.0.0/16] --> B[Private Subnet 10.1.1.0/24]
-A --> C[Public Subnet 10.1.2.0/24]
-B --> D[EC2: App Server (Private)]
-C --> E[ALB / Bastion Host]
-A --> F[NAT Gateway]
-F --> B
-Layer	Component	Purpose	Security Enforcement
-Network	VPC (10.1.0.0/16)	Logical isolation	Flow Logs enabled
-Subnet	Private + Public	Multi-tier structure	NACLs block unnecessary ports
-Compute	EC2 Instances	Host app workloads	No public IPs on app servers
-Access	IAM Roles	Fine-grained permissions	Least privilege only
-Security	SG + WAF	Network boundary	Deny-all default stance
-Monitoring	CloudTrail, Config	Visibility	Global auditing active
+    subgraph VPC Architecture
+        A[VPC 10.1.0.0/16] --> B[Private Subnet 10.1.1.0/24]
+        A --> C[Public Subnet 10.1.2.0/24]
+        B --> D[EC2: App Server Private]
+        C --> E[ALB / Bastion Host]
+        A --> F[NAT Gateway]
+        F --> B
+        E --> G[Internet]
+    end
+```
 
-🧱 2. Terraform Project Structure
+| Layer       | Component               | Purpose                           | Security Enforcement               |
+|-------------|-------------------------|-----------------------------------|------------------------------------|
+| Network     | VPC 10.1.0.0/16         | Logical isolation                 | Flow Logs enabled                  |
+| Subnet      | Private + Public        | Multi-tier structure              | NACLs block unnecessary ports      |
+| Compute     | EC2 Instances           | Host app workloads                | No public IPs on app servers       |
+| Access      | IAM Roles               | Fine-grained permissions          | Least privilege only               |
+| Security    | Security Groups + NACLs | Network boundary                  | Deny-all default stance            |
+| Monitoring  | CloudTrail, Config      | Visibility                        | Global auditing active             |
+
+## 🧱 2. Terraform Project Structure
 Inside your main course folder (~/secure-network-course/terraform):
 
-css
-Copy code
+```plaintext
 terraform/
 ├── main.tf
 ├── variables.tf
@@ -36,15 +41,17 @@ terraform/
 └── environments/
     ├── test.tfvars
     └── live.tfvars
-🪜 3. Terraform Provider Configuration (providers.tf)
-h
-Copy code
+```
+
+
+## 🪜 3. Terraform Provider Configuration (providers.tf)
+
 provider "aws" {
   region = "us-east-1"
 }
-📦 4. Core Infrastructure (main.tf)
-h
-Copy code
+
+## 📦 4. Core Infrastructure (main.tf)
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   name    = var.env_name
@@ -96,17 +103,17 @@ resource "aws_instance" "web" {
     Name = "${var.env_name}-web"
   }
 }
-🔧 5. Variables Definition (variables.tf)
-hcl
-Copy code
+
+## 🔧 5. Variables Definition (variables.tf)
+
 variable "env_name" {}
 variable "vpc_cidr" {}
 variable "public_subnets" { type = list(string) }
 variable "private_subnets" { type = list(string) }
 variable "key_name" {}
-📤 6. Outputs (outputs.tf)
-hcl
-Copy code
+
+## 📤 6. Outputs (outputs.tf)
+
 output "vpc_id" {
   value = module.vpc.vpc_id
 }
@@ -122,30 +129,28 @@ output "private_subnets" {
 output "instance_public_ip" {
   value = aws_instance.web.public_ip
 }
-🌍 7. Live Environment Variables (environments/live.tfvars)
-hcl
-Copy code
+
+## 🌍 7. Live Environment Variables (environments/live.tfvars)
+
 env_name        = "live"
 vpc_cidr        = "10.1.0.0/16"
 public_subnets  = ["10.1.2.0/24", "10.1.3.0/24"]
 private_subnets = ["10.1.1.0/24", "10.1.4.0/24"]
 key_name        = "SecureKey"
-🏗️ 8. Deploy with Terraform
+
+## 🏗️ 8. Deploy with Terraform
 Initialize and deploy your live infrastructure:
 
-bash
-Copy code
 cd ~/secure-network-course/terraform
 terraform init
 terraform plan -var-file=environments/live.tfvars
 terraform apply -var-file=environments/live.tfvars -auto-approve
-🔐 9. Post-Deployment Hardening Steps
+
+## 🔐 9. Post-Deployment Hardening Steps
 Run these after Terraform deploys:
 
 Enable VPC Flow Logs
 
-bash
-Copy code
 aws ec2 create-flow-logs \
   --resource-type VPC \
   --resource-ids $(terraform output -raw vpc_id) \
@@ -154,8 +159,6 @@ aws ec2 create-flow-logs \
   --log-group-name LiveVPC-FlowLogs
 Enable CloudTrail across regions
 
-bash
-Copy code
 aws cloudtrail create-trail --name LiveTrail --s3-bucket-name live-audit-logs
 aws cloudtrail start-logging --name LiveTrail
 Restrict IAM console logins
@@ -172,7 +175,8 @@ Access via HTTPS only.
 
 No direct SSH access except via Bastion.
 
-⚙️ 10. Verification Checklist
+## ⚙️ 10. Verification Checklist
+
 Control	Status	Verification
 VPC/Subnets	✅	terraform output
 NAT Gateway	✅	Internet access for private EC2
@@ -181,7 +185,8 @@ IAM MFA	✅	Required for all users
 Bastion Only SSH	✅	Confirmed via route + SG
 HTTPS-only access	✅	Security group test via Nmap
 
-🧠 11. Deep Reasoning – “Defense by Architecture”
+## 🧠 11. Deep Reasoning – “Defense by Architecture”
+
 Your Live environment should follow Zero-Trust design principles:
 
 No implicit trust — even intra-VPC communication is restricted.
@@ -192,7 +197,8 @@ Immutable infrastructure — No manual console edits.
 
 Auditable IaC — All infra changes happen via Terraform & PR approvals.
 
-🧾 Day 3 Summary
+## 🧾 Day 3 Summary
+
 ✅ Deployed a Production-grade VPC using Terraform
 ✅ Implemented private/public subnet isolation
 ✅ Enforced Zero-Trust controls and MFA for IAM
