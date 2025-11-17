@@ -13,10 +13,11 @@ graph TD
     L --> H
     
     subgraph State
-        M[S3 Terraform State]:::state
-        N[DynamoDB Locks]:::state
+        M[S3 Terraform State]
+        N[DynamoDB Locks]
         M --> N
     end
     
-    classDef state fill:#eef,stroke:#99f,stroke-width:1px
+    style M fill:#eef,stroke:#99f,stroke-width:1px
+    style N fill:#eef,stroke:#99f,stroke-width:1px
 ```
