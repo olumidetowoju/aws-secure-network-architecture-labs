@@ -31,13 +31,11 @@ With proper AWS monitoring, every API call, flow, and configuration change is au
 ## 🧩 3. Terraform for Monitoring Stack  
 
 Create a new file:  
-```bash
+
 cd ~/secure-network-course/terraform
 nano monitoring.tf
 Paste:
 
-hcl
-Copy code
 # CloudTrail
 resource "aws_cloudtrail" "live_trail" {
   name                          = "LiveTrail"
@@ -105,15 +103,15 @@ resource "aws_iam_role_policy_attachment" "config_attach" {
 resource "aws_guardduty_detector" "gd" {
   enable = true
 }
-🚀 4. Deploy Monitoring Stack
-bash
-Copy code
+
+## 🚀 4. Deploy Monitoring Stack
+
 terraform init
 terraform plan -var-file=environments/live.tfvars
 terraform apply -var-file=environments/live.tfvars -auto-approve
-📊 5. Enable Security Hub (Compliance Center)
-bash
-Copy code
+
+## 📊 5. Enable Security Hub (Compliance Center)
+
 aws securityhub enable-security-hub --enable-default-standards
 aws securityhub get-enabled-standards
 Standards automatically applied:
@@ -124,39 +122,33 @@ NIST CSF
 
 AWS Foundational Security Best Practices
 
-🔎 6. Validate CloudTrail Logging
-bash
-Copy code
+## 🔎 6. Validate CloudTrail Logging
+
 aws cloudtrail describe-trails
 aws cloudtrail lookup-events --lookup-attributes AttributeKey=Username,AttributeValue=<your-username>
 Confirm logs exist in your S3 bucket:
 
-bash
-Copy code
 aws s3 ls s3://live-trail-logs-<bucket-id>/
-⚠️ 7. Simulate Threat Scenarios
+
+## ⚠️ 7. Simulate Threat Scenarios
+
 a. Unapproved SSH Attempt (GuardDuty)
 Try connecting with a wrong key to trigger detection.
 
 b. Public S3 Bucket Creation
 Create one intentionally:
 
-bash
-Copy code
 aws s3api create-bucket --bucket test-public-bucket --region us-east-1
 aws s3api put-bucket-acl --bucket test-public-bucket --acl public-read
 GuardDuty + Config should flag this as non-compliant.
 
 Clean up:
 
-bash
-Copy code
 aws s3 rb s3://test-public-bucket --force
-📢 8. Alerts & Automation
+
+## 📢 8. Alerts & Automation
 Use CloudWatch Alarms for GuardDuty and Config events:
 
-bash
-Copy code
 aws cloudwatch put-metric-alarm \
   --alarm-name GuardDutyHighSeverity \
   --metric-name FindingSeverity \
@@ -167,14 +159,15 @@ aws cloudwatch put-metric-alarm \
   --comparison-operator GreaterThanThreshold \
   --evaluation-periods 1 \
   --alarm-actions <sns-topic-arn>
-🧰 9. Integrate with SNS for Notifications
-bash
-Copy code
+
+## 🧰 9. Integrate with SNS for Notifications
+
 aws sns create-topic --name SecurityAlerts
 aws sns subscribe --topic-arn <arn> --protocol email --notification-endpoint <your-email>
 You’ll receive alerts for any GuardDuty high-severity finding.
 
-✅ 10. Compliance Dashboard Checks
+## ✅ 10. Compliance Dashboard Checks
+
 In AWS Console:
 
 CloudTrail: check “Trails” → “Event history”.
@@ -185,7 +178,8 @@ GuardDuty: view “Findings”.
 
 Security Hub: view CIS Benchmark report.
 
-🧾 Day 5 Summary
+## 🧾 Day 5 Summary
+
 ✅ Enabled CloudTrail for API visibility
 ✅ Enabled AWS Config for continuous compliance
 ✅ Activated GuardDuty for threat detection
@@ -193,5 +187,6 @@ Security Hub: view CIS Benchmark report.
 ✅ Integrated CloudWatch and SNS for alerting
 ✅ Completed Zero-Trust Visibility & Compliance Framework
 
-🔖 Next Step
+## 🔖 Next Step
+
 Proceed to Day 6 – Automated Remediation & DevSecOps Integration (Final Stage)
