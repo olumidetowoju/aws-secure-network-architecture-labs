@@ -12,13 +12,9 @@ graph TD
     K[EventBridge] --> L[Lambda Auto-Remediation]
     L --> H
     
-    subgraph State
+    subgraph State Management
         M[S3 Terraform State]
         N[DynamoDB Locks]
         M --> N
     end
-    
-    class M state
-    class N state
-    classDef state fill:#eef,stroke:#99f,stroke-width:1px
 ```
