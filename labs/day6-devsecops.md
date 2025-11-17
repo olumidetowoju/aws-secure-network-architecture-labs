@@ -15,6 +15,31 @@ Wire security into the delivery pipeline: static checks (IaC), signed plans, cha
 
 ---
 
+## 🧱 DevSecOps Pipeline Diagram
+
+```mermaid
+graph TD
+    A[Developer PR] --> B[GitHub Actions]
+    B --> C[Static Checks: tfsec / checkov / OPA]
+    C --> D[Terraform Plan Test]
+    D --> E[Terraform Apply Test]
+    E --> F[Terraform Plan Live]
+    F --> G[Manual Approval]
+    G --> H[Terraform Apply Live]
+    H --> I[AWS Resources: VPC / EC2 / SG / NAT]
+    I --> J[CloudTrail / Config / GuardDuty / SecurityHub]
+    J --> K[SNS Alerts]
+    K --> L[EventBridge Rule]
+    L --> M[Lambda Auto-Remediation]
+    M --> I
+    
+    subgraph State_Management
+        N[S3 Terraform State]
+        O[DynamoDB State Lock]
+        N --> O
+    end
+```
+
 ## 🗃️ 2) Terraform Remote State Backend
 Create `~/secure-network-course/terraform/backend.tf`:
 
