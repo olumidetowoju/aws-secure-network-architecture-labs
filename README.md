@@ -12,7 +12,7 @@ Build a **10-Day enterprise-grade AWS network** from **Test → Live**, with **T
 
 ---
 
-## 📚 Course Overview
+# 📚 Course Overview
 
 | Day | Module | Description | Lab | Diagram |
 |-----|---------|--------------|------|----------|
@@ -27,35 +27,16 @@ Build a **10-Day enterprise-grade AWS network** from **Test → Live**, with **T
 | **[Day 9](labs/day9-incident-response.md)** | Incident Response & Forensics | GuardDuty, Detective, Athena, Lambda quarantine | [Lab 9](labs/day9-incident-response.md) | [Diagram 9](diagrams/day9-incident-response.mmd) |
 | **[Day 10](labs/day10-cost-governance.md)** | Cost Optimization & Governance | Budgets, Tag Policies, SCP guardrails, FinOps | [Lab 10](labs/day10-cost-governance.md) | [Diagram 10](diagrams/day10-cost-governance.mmd) |
 
----
 
-## 🧭 Folder Structure
+# ⚙️ Quick Start
 
-aws-secure-network-architecture-labs/
-├── labs/ # Markdown labs (Day 1-10)
-├── diagrams/ # Mermaid diagrams (.mmd)
-├── terraform/ # IaC code and automation
-│ ├── environments/
-│ ├── lambda/
-│ └── *.tf
-├── .github/workflows/ # GitHub Actions pipelines
-├── anki/ # Flashcards / revision
-└── README.md # Living course index
-
-yaml
-Copy code
-
----
-
-## ⚙️ Quick Start
-
-```bash
 git clone https://github.com/olumidetowoju/aws-secure-network-architecture-labs.git
 cd aws-secure-network-architecture-labs
 cat labs/day1-foundations.md
 Use Mermaid Live Editor or GitHub’s built-in renderer to visualize any .mmd diagram.
 
-🧱 Technology Stack
+# 🧱 Technology Stack
+
 AWS: VPC, EC2, IAM, S3, RDS, CloudTrail, Config, GuardDuty, Security Hub, KMS
 
 IaC: Terraform (modular + remote state)
@@ -70,7 +51,8 @@ Automation: Lambda, EventBridge
 
 Governance: AWS Organizations, SCPs, Tag Policies, Budgets
 
-🔄 Living README
+# 🔄 Living README
+
 This is a living document — each lab and diagram is interlinked for easy navigation.
 You can add future days, advanced modules, or new diagrams without changing this layout.
 
@@ -82,14 +64,16 @@ Day 12 – Multi-Account Landing Zone
 
 Day 13 – Compliance Automation (SOC2, ISO27001)
 
-🏁 Completion
+# 🏁 Completion
+
 By Day 10 you will have:
 ✅ A fully automated Zero-Trust AWS network
 ✅ Secure promotion pipeline from Test → Live
 ✅ Monitored, compliant, cost-optimized environment
 ✅ Governance guardrails and DevSecOps integration
 
-🔗 Resources
+# 🔗 Resources
+
 AWS Well-Architected Framework – Security Pillar
 
 Terraform AWS Modules Registry
@@ -99,3 +83,17 @@ AWS Security Hub CIS Benchmarks
 Mermaid Diagram Syntax Reference
 
 © 2025 Olumide Towoju — Built for real-world secure cloud operations. ☁️
+
+# 🧭 Folder Structure
+```plaintext
+aws-secure-network-architecture-labs/
+├── labs/ # Markdown labs (Day 1-10)
+├── diagrams/ # Mermaid diagrams (.mmd)
+├── terraform/ # IaC code and automation
+│ ├── environments/
+│ ├── lambda/
+│ └── *.tf
+├── .github/workflows/ # GitHub Actions pipelines
+├── anki/ # Flashcards / revision
+└── README.md # Living course index
+
