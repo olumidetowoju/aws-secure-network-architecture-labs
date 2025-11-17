@@ -1,4 +1,3 @@
-```mermaid
 graph TD
   A[Developer PR] --> B[GitHub Actions]
   B --> C[Static Checks: tfsec / Checkov / OPA]
@@ -17,7 +16,5 @@ graph TD
   M --> I
 
   subgraph State_Management
-    N[S3 Terraform State]
-    O[DynamoDB State Lock]
-    N --> O
+    N[S3 Terraform State] --> O[DynamoDB State Lock]
   end
