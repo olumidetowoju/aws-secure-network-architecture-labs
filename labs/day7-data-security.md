@@ -14,23 +14,25 @@ Implement a secure data layer with:
 
 ```mermaid
 graph TD
-A[Private Subnet 10.1.1.0/24] --> B[RDS (MySQL Encrypted)]
-B --> C[KMS CMK Key]
-D[Secrets Manager] --> B
-E[App Server (Private Subnet)] --> D
-E --> B
-Layer	Component	Security Control
-Data Store	RDS Instance	Storage & Transport Encryption
-Keys	KMS CMK	Automatic rotation + auditing
-Credentials	Secrets Manager	Rotated every 30 days
-Network	Private Subnet only	No public endpoint
-Access	IAM roles	Least privilege policy
+    A[Private Subnet 10.1.1.0/24] --> B[RDS MySQL Encrypted]
+    B --> C[KMS CMK Key]
+    D[Secrets Manager] --> B
+    E[App Server Private Subnet] --> D
+    E --> B
+```
 
-⚙️ 2. Terraform – RDS + KMS Module
+| Layer       | Component          | Security Control                  |
+|-------------|--------------------|-----------------------------------|
+| Data Store  | RDS Instance       | Storage & Transport Encryption    |
+| Keys        | KMS CMK            | Automatic rotation + auditing     |
+| Credentials | Secrets Manager    | Rotated every 30 days            |
+| Network     | Private Subnet only| No public endpoint               |
+| Access      | IAM roles          | Least privilege policy           |
+
+## ⚙️ 2. Terraform – RDS + KMS Module
+
 Create ~/secure-network-course/terraform/data.tf:
 
-hcl
-Copy code
 resource "aws_kms_key" "rds_key" {
   description = "Key for RDS encryption"
   deletion_window_in_days = 10
@@ -92,11 +94,10 @@ resource "random_password" "db" {
   length = 16
   special = true
 }
-🔐 3. Store Credentials Securely
+
+## 🔐 3. Store Credentials Securely
 Add to data.tf:
 
-h
-Copy code
 resource "aws_secretsmanager_secret" "db_secret" {
   name = "${var.env_name}-db-credentials"
 }
@@ -112,14 +113,12 @@ resource "aws_secretsmanager_secret_version" "db_secret_version" {
 }
 To rotate automatically:
 
-bash
-Copy code
 aws secretsmanager rotate-secret --secret-id <secret_arn> --rotation-lambda-arn <lambda_arn>
-🧩 4. Application Access via IAM Role
+
+## 🧩 4. Application Access via IAM Role
+
 Allow only app servers to read secret:
 
-hcl
-Copy code
 resource "aws_iam_policy" "app_secret_access" {
   name = "AllowAppSecretAccess"
   policy = jsonencode({
@@ -136,13 +135,15 @@ resource "aws_iam_role_policy_attachment" "attach_secret_policy" {
   role       = aws_iam_role.app_role.name
   policy_arn = aws_iam_policy.app_secret_access.arn
 }
-🧮 5. Verification Commands
-bash
-Copy code
+
+## 🧮 5. Verification Commands
+
 aws rds describe-db-instances --db-instance-identifier live-db --query "DBInstances[*].StorageEncrypted"
 aws kms list-keys
 aws secretsmanager get-secret-value --secret-id live-db-credentials
-🛡️ 6. Compliance Checklist
+
+## 🛡️ 6. Compliance Checklist
+
 Control	Status	Evidence
 RDS Encrypted	✅	StorageEncrypted=true
 No Public Endpoint	✅	Private subnet
@@ -150,7 +151,8 @@ KMS Rotation	✅	enable_key_rotation=true
 Secrets Rotation	✅	AWS Secrets Manager policy
 IAM Least Privilege	✅	App role policy attached
 
-🧠 7. Deep Reasoning – “Trust Anchored in Encryption”
+## 🧠 7. Deep Reasoning – “Trust Anchored in Encryption”
+
 Your security model:
 
 Encrypt data at rest → protects storage media breaches.
@@ -163,12 +165,14 @@ Limit access scope → IAM boundary + private subnets.
 
 Centralize keys → KMS audited use logs.
 
-🧾 Day 7 Summary
+## 🧾 Day 7 Summary
+
 ✅ RDS deployed in private subnet with KMS encryption
 ✅ Secrets Manager storing rotated credentials
 ✅ IAM role controls data access
 ✅ Full encryption + audit trail compliance (CIS/NIST mapping)
 ✅ Data layer now Zero-Trust ready
 
-🔖 Next
+## 🔖 Next
+
 Day 8 – Identity & Access Hardening (AWS SSO, IAM Boundaries, Role Chaining)
