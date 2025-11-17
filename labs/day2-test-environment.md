@@ -113,5 +113,5 @@ Control	Implemented	Notes
 ✔ Validated Internet and SSH connectivity
 ✔ Prepared foundation for Live (Production) environment
 
-🔖 Next Step
+## 🔖 Next Step
 Proceed to Day 3 – Building the Live (Production) Environment + Terraform Automation
