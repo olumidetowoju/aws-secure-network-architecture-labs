@@ -1,7 +1,8 @@
 graph TD
-A[App Server (Private Subnet)] --> B[RDS (MySQL Encrypted)]
-B --> C[KMS CMK (Key Rotation)]
-A --> D[Secrets Manager (GetSecretValue)]
-D --> B
-E[Parameter Store] --> A
-B --> F[CloudWatch Logs]
+    A[App Server Private Subnet] --> B[RDS Database]
+    A --> C[S3 Bucket]
+    D[Load Balancer] --> A
+    E[VPC] --> A
+    E --> B
+    F[Security Group] --> A
+    F --> B
