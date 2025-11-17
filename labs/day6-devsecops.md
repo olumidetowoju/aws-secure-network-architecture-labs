@@ -18,7 +18,6 @@ Wire security into the delivery pipeline: static checks (IaC), signed plans, cha
 ## 🗃️ 2) Terraform Remote State Backend
 Create `~/secure-network-course/terraform/backend.tf`:
 
-```hcl
 terraform {
   backend "s3" {
     bucket         = "secure-net-tfstate"
@@ -30,8 +29,6 @@ terraform {
 }
 Create once per account:
 
-bash
-Copy code
 aws s3api create-bucket --bucket secure-net-tfstate --region us-east-1
 aws dynamodb create-table --table-name secure-net-tf-locks \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
@@ -39,8 +36,6 @@ aws dynamodb create-table --table-name secure-net-tf-locks \
   --billing-mode PAY_PER_REQUEST
 Initialize for test then live:
 
-bash
-Copy code
 cd ~/secure-network-course/terraform
 ENV=test terraform init
 terraform workspace new test || true
@@ -49,17 +44,14 @@ terraform workspace select test
 ENV=live terraform init
 terraform workspace new live || true
 terraform workspace select live
-🧪 3) Static Security Gates (Local & CI)
+
+## 🧪 3) Static Security Gates (Local & CI)
 Install tools:
 
-bash
-Copy code
 pipx install checkov
 curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
 Quick run:
 
-bash
-Copy code
 cd ~/secure-network-course/terraform
 tfsec .
 checkov -d .
@@ -78,14 +70,11 @@ deny[msg] {
 }
 Run with Conftest:
 
-bash
-Copy code
 conftest test .
-🔁 4) GitHub Actions – Secure CI/CD
+
+## 🔁 4) GitHub Actions – Secure CI/CD
 Create ~/secure-network-course/.github/workflows/deploy.yml:
 
-yaml
-Copy code
 name: Secure IaC Pipeline
 on:
   pull_request:
@@ -187,12 +176,10 @@ jobs:
         run: terraform apply -auto-approve plan-live.tfplan
 Use GitHub Environments → production to require approvers + secrets.
 
-🛠️ 5) Auto-Remediation Patterns
+## 🛠️ 5) Auto-Remediation Patterns
 a) Public S3 Bucket Auto-Close (EventBridge + Lambda)
 Create ~/secure-network-course/terraform/remediation.tf:
 
-hcl
-Copy code
 resource "aws_iam_role" "rem_lambda_role" {
   name = "remediate-public-s3-role"
   assume_role_policy = jsonencode({
@@ -269,21 +256,20 @@ def handler(event, context):
     return {"status":"remediated", "bucket": bucket}
 Zip & apply:
 
-bash
-Copy code
 cd ~/secure-network-course/terraform
 mkdir -p lambda
 nano lambda/index.py   # paste code above
 zip -j lambda/rem_s3.zip lambda/index.py
 terraform apply -var-file=environments/live.tfvars -auto-approve
-🧯 6) Rollback Strategy
+
+## 🧯 6) Rollback Strategy
 Terraform: terraform destroy -target=<resource> for surgical rollback; or revert commit → pipeline reapplies previous state.
 
 Blue/Green for app tiers: add ALB target groups per version; switch via weighted listener rule.
 
 State backups: S3 versioning keeps tfstate history.
 
-✅ 7) Promotion Flow (You’ll Practice)
+## ✅ 7) Promotion Flow (You’ll Practice)
 PR → pipeline runs tfsec/checkov + plan (test).
 
 Merge → apply (test).
@@ -294,7 +280,7 @@ Human approval in production environment.
 
 apply (live) executes with recorded change set.
 
-🔍 8) Evidence & Audit
+## 🔍 8) Evidence & Audit
 Store plan files as artifacts (immutable).
 
 Enable required reviewers for production.
@@ -303,12 +289,12 @@ Capture CloudTrail for IAM/Terraform API calls.
 
 Security Hub finding reductions are your KPI.
 
-🧾 Day 6 Summary
+## 🧾 Day 6 Summary
 ✅ Remote state + locking
 ✅ Static policy gates (tfsec / Checkov / OPA)
 ✅ Two-stage pipeline with manual prod approval
 ✅ EventBridge + Lambda auto-remediation
 ✅ Rollback patterns + audit evidence
 
-🔖 Next
+## 🔖 Next
 (Optional) Day 7 – Data Layer Security (RDS/Aurora, KMS, Parameter Store/Secrets Manager, TLS, rotation)
